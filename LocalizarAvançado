@@ -1,0 +1,19 @@
+%Com o Excel aberto, clique na guia Desenvolvedor e no botão Visual Basic.
+%Clique no projeto VBAProject(PERSONAL.XLSB).
+%Selecione o menu Inserir->User Form
+%Clique no formulário criado e selecione na caixa de ferramentas os objetos:
+%Frame = altere a propriedade name para frDados e a Caption para Pesquisar
+%Lable = altere a propriedade Caption para Pesquisar
+%TextBox = altere a propriedade name para txtPesquisa
+%CommandButton = altere a propriedade Caption para Pesquisar
+%Frame2 = altere a propriedade Caption para Resultados
+%ListBox = altere a propriedade Name para listResultado, a propriedade ForeColor para &H00FF0000& e fonte marcar como sublinhado.
+
+%Clique duas vezes sobre o botão Pesquisar e insira o código abaixo:
+Private Sub CommandButton1_Click() Dim currentFind As Excel.Range Dim firstFind As Excel.Range Dim lQtdePlan As Integer Dim lPlanAtual As Integer Dim lPlanFim As Boolean 'Conta a quantidade de planilhas lQtdePlan = Worksheets.Count lPlanAtual = 1 lPlanFim = False 'Limpa os resultados listResultado.Clear 'Verifica se há texto para pesquisar If txtPesquisa.Text <> "" Then 'Loop pelas planilhas While lPlanAtual <= lQtdePlan 'Define a Range de Pesquisa Set currentFind = Worksheets(lPlanAtual).Range("A1:XFD1048576").Find(txtPesquisa.Text, , _ Excel.XlFindLookIn.xlValues, Excel.XlLookAt.xlPart, _ Excel.XlSearchOrder.xlByRows, Excel.XlSearchDirection.xlNext, False) Set firstFind = Nothing 'Realiza o loop das pesquisas While Not currentFind Is Nothing And lPlanFim = False If firstFind Is Nothing Then Set firstFind = currentFind ElseIf currentFind.Address = firstFind.Address Then lPlanFim = True End If If lPlanFim = False Then Set currentFind = Worksheets(lPlanAtual).Range("A1:XFD1048576").FindNext(currentFind) listResultado.AddItem (Worksheets(lPlanAtual).Name & "!" & currentFind.Address) End If Wend 'Passa para a próxima planilha lPlanAtual = lPlanAtual + 1 lPlanFim = False Wend End If Sair: Exit Sub End Sub
+
+%Clique duas vezes no ListBox e insira o código abaixo:
+Private Sub listResultado_Click() Dim lRng As Range Dim lEndereco() As String 'Separa a planilha da célula lEndereco = Split(listResultado, "!") 'Abre a planilha Worksheets(lEndereco(0)).Activate 'Define o endereço Set lRng = Range(lEndereco(1)) 'Ativa o endereço lRng.Activate End Sub 
+
+%Clique na guia Inserir Módulo, e no módulo criado insira o código abaixo:
+Sub gsLocalizarAvancado() frmPesquisaAvancada.Show End Sub
